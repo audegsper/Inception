@@ -7,12 +7,15 @@ up :
 	sudo cp -rp ./srcs/requirements/nginx/conf/hosts /etc/hosts
 	sudo chmod 777 /etc/hosts
 
+down :
+	sudo docker-compose -f srcs/docker-compose.yml down
+
 fdown :
 	sudo docker stop $$(sudo docker ps -a -q)
 	sudo docker rm $$(sudo docker ps -a -q)
 	sudo docker rmi -f $$(sudo docker images -q)
 	sudo docker system prune -f
-	sudo rm -rf ${HOME}/data
+	sudo rm -rf ${HOME}/data /etc/hosts
 
 ps :
 	sudo docker-compose -f srcs/docker-compose.yml ps
