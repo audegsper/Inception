@@ -1,6 +1,7 @@
 FROM	debian:buster
 
-COPY	./tools/setup_wordpress.sh /tmp
+COPY	./tools/setup_wordpress.sh /tmp/
+COPY	./conf/wp-config.php /tmp/
 
 RUN		apt-get update -y
 RUN		apt-get install -y php7.3-fpm
