@@ -1,14 +1,16 @@
-#!/bin/bash
+#!/bin/sh
+service mysql start;
 
-service mysql start
-db_exist=$(echo "SHOW DATABASES" | mysql -u root | grep "wp_db" | wc -l)
-if [ $db_exist = "0" ]
-then
-echo "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE" | mysql -u root
-echo "CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'" | mysql -u root
-echo "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%'" | mysql -u root
-mysql wp_db -u root < /tmp/wp_dump.sql
-mysql -e "ALTER USER '$MYSQL_ROOT'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD'; FLUSH PRIVILEGES;"
+cat /var/lib/mysql/.setup 2> /dev/null
+
+if [ $? -ne 0 ]; then
+mysql -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE";
+mysql -e "CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'";
+mysql -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%'";
+mysql -e "ALTER USER '$MYSQL_ROOT'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'; FLUSH PRIVILEGES;"
+mysql $MYSQL_DATABASE -u$MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD < ./wp_dump.sql
+mysqladmin -u$MYSQL_ROOT -p$MYSQL_ROOT_PASSWORD shutdown
+touch /var/lib/mysql/.setup
 fi
-service mysql stop
+
 exec mysqld

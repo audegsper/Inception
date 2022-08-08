@@ -1,4 +1,4 @@
-version : '3' # 3이 안정적임.
+version : '3'
 
 services:
   nginx:
@@ -7,7 +7,7 @@ services:
     image: nginx
     depends_on :
       - wordpress
-    restart: always # 문제가 생길 경우 항상 재실행
+    restart: always
     ports:
       - "443:443"
     networks:
@@ -15,7 +15,7 @@ services:
     volumes:
       - wp_volume:/var/www/
 
-  wordpress: # 9000으로 포트 연결 시켜줄 필요는 없는가?
+  wordpress:
     container_name: c_wordpress
     build: ./requirements/wordpress/
     image: wordpress
@@ -56,4 +56,3 @@ volumes:
         type: volume
         o : 'bind'
         device: '/home/dohykim/data/wordpress'
-
